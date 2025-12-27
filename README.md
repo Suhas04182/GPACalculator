@@ -94,12 +94,13 @@ For each subject:
 The UI shows:
     * SGPA for current semester with total credits.
     * CGPA for all semesters with total credits and stats (number of semesters and subjects).
-Formulas and mapping follow common Indian 10‑point grading schemes used in many
+Formulas and mapping follow common Indian 10‑point grading schemes used in many 
 university CGPA tools.​
 
 #How Data Is Saved Per User
 On any change (add subject, edit grade, change semester), an auto‑save timer runs.
 Data is saved under key: marks_<username> in localStorage.
+
 Example:
 json
 {
