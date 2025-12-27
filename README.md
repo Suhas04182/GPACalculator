@@ -79,7 +79,7 @@ only (no backend).
           * Revoke → sets approved = false.
         * For admin:
           * No action; admin account cannot be changed.
-*Data is stored in localStorage keys:
+* Data is stored in localStorage keys:
     * users – array of all user objects.
     * currentUser – currently logged‑in user object.
     * marks_<username> – GPA data for each user.
