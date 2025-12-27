@@ -55,7 +55,7 @@ let CURRENT_USER = getCurrentUser();
 // ---------- GPA CALCULATOR CLASS ----------
 class GPACalculator {
   constructor() {
-    this.semesters = [{ year: 1, subjects: [] }]; // year field added
+    this.semesters = [{ year: 1, subjects: [] }]; // year field
     this.currentSemester = 1;
     this.gradePoints = {
       O: 10,
@@ -75,7 +75,9 @@ class GPACalculator {
       CURRENT_USER = user;
       this.loadDataForUser(user.username);
     } else {
-      this.semesters = [{ year: 1, subjects: [{ name: "", grade: "O", credits: 4 }] }];
+      this.semesters = [
+        { year: 1, subjects: [{ name: "", grade: "O", credits: 4 }] }
+      ];
       this.currentSemester = 1;
     }
     this.renderSemesterTabs();
@@ -192,7 +194,7 @@ class GPACalculator {
   addNewSemester() {
     const nextIndex = this.semesters.length; // 0-based
     const semNo = nextIndex + 1;
-    const year = Math.min(4, Math.ceil(semNo / 2)); // max 4th year
+    const year = Math.min(4, Math.ceil(semNo / 2));
     this.semesters.push({ year, subjects: [] });
     this.currentSemester = this.semesters.length;
     this.renderSemesterTabs();
@@ -299,17 +301,18 @@ class GPACalculator {
   loadDataForUser(username) {
     const raw = localStorage.getItem("marks_" + username);
     if (!raw) {
-      this.semesters = [{ year: 1, subjects: [{ name: "", grade: "O", credits: 4 }] }];
+      this.semesters = [
+        { year: 1, subjects: [{ name: "", grade: "O", credits: 4 }] }
+      ];
       this.currentSemester = 1;
       return false;
     }
     try {
       const data = JSON.parse(raw);
-      this.semesters =
-        (data.semesters || []).map((s, i) => ({
-          year: s.year || Math.min(4, Math.ceil((i + 1) / 2)),
-          subjects: s.subjects || []
-        }));
+      this.semesters = (data.semesters || []).map((s, i) => ({
+        year: s.year || Math.min(4, Math.ceil((i + 1) / 2)),
+        subjects: s.subjects || []
+      }));
       if (!this.semesters.length) {
         this.semesters = [{ year: 1, subjects: [] }];
       }
@@ -527,6 +530,47 @@ function showAppForUser(user) {
     adminPanel.classList.add("hidden");
     logPanel.classList.add("hidden");
   }
+}
+
+// ---------- GOOGLE SIGN-IN CALLBACK ----------
+function handleGoogleLogin(response) {
+  // Google JWT decode (demo/local)
+  const payload = JSON.parse(atob(response.credential.split(".")[1]));
+
+  const email = payload.email;
+  const name = payload.name || email;
+  const googleId = payload.sub;
+
+  let users = getUsers();
+  let user = users.find(
+    (u) => u.googleId === googleId || u.username === email
+  );
+
+  if (!user) {
+    const role =
+      email === "rajputsing596@gmail.com" ? "admin" : "student";
+
+    user = {
+      username: email,
+      password: null,
+      googleId,
+      role,
+      approved: role === "admin"
+    };
+
+    users.push(user);
+    saveUsers(users);
+  }
+
+  if (!user.approved && user.role !== "admin") {
+    alert("Your account is not approved by admin yet.");
+    return;
+  }
+
+  setCurrentUser(user);
+  CURRENT_USER = user;
+  addLoginLog(user.username);
+  showAppForUser(user);
 }
 
 // auto-save on unload

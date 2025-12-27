@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CGPA/SGPA Calculator with Login</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
   <!-- AUTH SECTION -->
@@ -14,6 +17,22 @@
       <input id="loginUsername" type="text" placeholder="Username" />
       <input id="loginPassword" type="password" placeholder="Password" />
       <button class="btn primary" onclick="handleLogin()">Login</button>
+
+      <!-- Google Sign-In button -->
+      <div id="g_id_onload"
+           data-client_id="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"
+           data-context="signin"
+           data-callback="handleGoogleLogin"
+           data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin"
+           data-type="standard"
+           data-shape="rectangular"
+           data-theme="outline"
+           data-text="continue_with"
+           data-size="large">
+      </div>
+      <!-- End Google Sign-In -->
 
       <p class="auth-text">
         New user?
