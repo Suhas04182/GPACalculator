@@ -4,19 +4,19 @@ admin approval system, and browser‑based data storage. Built using HTML, CSS, 
 only (no backend).
 
 #Features
-*Login / Register system (username + password).
-*Admin role:
+* Login / Register system (username + password).
+* Admin role:
     * Only admin can edit marks (add/modify subjects, semesters).
     * Can see all registered users.
     * Can approve / revoke student accounts.
-*Student role:
+* Student role:
     * Can log in only after admin approves the account.
     * Can view own SGPA/CGPA and saved semesters.
-*CGPA / SGPA calculator:
+* CGPA / SGPA calculator:
     * Multi‑semester support.
     * Grade mapping (O, A+, A, B+, B, C+, C, F → 10‑point scale).
     * Per‑subject credits and grade points.
-*Data storage:
+* Data storage:
     * All data saved in browser localStorage.
     * Per‑user marks stored separately.
     * Login logs stored for admin.
@@ -25,11 +25,6 @@ only (no backend).
 * HTML5 – structure and layout.
 * CSS3 – responsive UI, gradient background, buttons, tables.
 * Vanilla JavaScript (ES6) – login logic, admin logic, GPA calculations, localStorage.
-
-gpa-calculator/
-├── index.html    Login + Calculator UI
-├── style.css     All styling
-└── script.js     Logic: auth + admin + GPA + storage
 
 #index.html:
 * Contains login/register section.
@@ -95,17 +90,7 @@ gpa-calculator/
 For each subject:
     * Grade → grade point (e.g., O = 10, A+ = 9, A = 8, B+ = 7, etc.).
     * Each subject has credits.
-
-SGPA(per semester):
-          ∑(grade point×credits)
- SGPA=  ---------------------------         
-                ∑credits
- 
-CGPA(overall):
-        ∑ grade×credits(all semesters)
-CGPA=  ------------------------------
-         ∑ credits(all semesters)
- 
+    
 The UI shows:
     * SGPA for current semester with total credits.
     * CGPA for all semesters with total credits and stats (number of semesters and subjects).
