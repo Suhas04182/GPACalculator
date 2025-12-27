@@ -27,6 +27,7 @@ function getCurrentUser() {
   }
 }
 
+// login logs
 function addLoginLog(username) {
   const raw = localStorage.getItem("loginLogs");
   let logs = [];
@@ -52,10 +53,9 @@ function getLoginLogs() {
 let CURRENT_USER = getCurrentUser();
 
 // ---------- GPA CALCULATOR CLASS ----------
-
 class GPACalculator {
   constructor() {
-    this.semesters = [{ subjects: [] }];
+    this.semesters = [{ year: 1, subjects: [] }]; // year field added
     this.currentSemester = 1;
     this.gradePoints = {
       O: 10,
@@ -67,7 +67,6 @@ class GPACalculator {
       C: 4,
       F: 0
     };
-    this.init();
   }
 
   init() {
@@ -75,9 +74,8 @@ class GPACalculator {
     if (user) {
       CURRENT_USER = user;
       this.loadDataForUser(user.username);
-      showAppForUser(user);
     } else {
-      this.semesters = [{ subjects: [{ name: "", grade: "O", credits: 4 }] }];
+      this.semesters = [{ year: 1, subjects: [{ name: "", grade: "O", credits: 4 }] }];
       this.currentSemester = 1;
     }
     this.renderSemesterTabs();
@@ -85,18 +83,16 @@ class GPACalculator {
   }
 
   // ----- UI RENDER -----
-
   renderSemesterTabs() {
     const tabsContainer = document.getElementById("semesterTabs");
     if (!tabsContainer) return;
-
     tabsContainer.innerHTML = "";
 
-    this.semesters.forEach((_, index) => {
+    this.semesters.forEach((sem, index) => {
       const semNo = index + 1;
       const btn = document.createElement("button");
       btn.className = "tab" + (semNo === this.currentSemester ? " active" : "");
-      btn.textContent = `Semester ${semNo}`;
+      btn.textContent = `Year ${sem.year} - Sem ${semNo}`;
       btn.onclick = () => switchSemester(semNo);
       tabsContainer.appendChild(btn);
     });
@@ -163,7 +159,6 @@ class GPACalculator {
   }
 
   // ----- DATA CHANGE -----
-
   addSubject() {
     this.semesters[this.currentSemester - 1].subjects.push({
       name: "",
@@ -193,8 +188,12 @@ class GPACalculator {
     this.renderTable();
   }
 
+  // automatic year: Sem1-2 → year1, 3-4 → year2, etc.
   addNewSemester() {
-    this.semesters.push({ subjects: [] });
+    const nextIndex = this.semesters.length; // 0-based
+    const semNo = nextIndex + 1;
+    const year = Math.min(4, Math.ceil(semNo / 2)); // max 4th year
+    this.semesters.push({ year, subjects: [] });
     this.currentSemester = this.semesters.length;
     this.renderSemesterTabs();
     this.renderTable();
@@ -210,7 +209,7 @@ class GPACalculator {
 
   resetAll() {
     if (!confirm("Reset all semesters and marks?")) return;
-    this.semesters = [{ subjects: [] }];
+    this.semesters = [{ year: 1, subjects: [] }];
     this.currentSemester = 1;
     this.renderSemesterTabs();
     this.renderTable();
@@ -221,7 +220,6 @@ class GPACalculator {
   }
 
   // ----- CALCULATIONS -----
-
   calculateSGPA() {
     const sem = this.semesters[this.currentSemester - 1];
     let totalPoints = 0;
@@ -239,7 +237,7 @@ class GPACalculator {
     const box = document.getElementById("sgpaResult");
     box.innerHTML = `
       <div class="result-box">
-        📊 Semester ${this.currentSemester} SGPA: <strong>${sgpa}</strong><br />
+        📊 Year ${sem.year} - Semester ${this.currentSemester} SGPA: <strong>${sgpa}</strong><br />
         <small>Total Credits: ${totalCredits} | Formula: Σ(Grade×Credits)/ΣCredits</small>
       </div>
     `;
@@ -264,7 +262,7 @@ class GPACalculator {
     const box = document.getElementById("cgpaResult");
     box.innerHTML = `
       <div class="result-box cgpa-result">
-        🎯 Overall CGPA: <strong>${cgpa}</strong><br />
+        🎯 Overall CGPA (All Years): <strong>${cgpa}</strong><br />
         <small>Total Credits Completed: ${totalCredits}</small>
       </div>
     `;
@@ -286,7 +284,6 @@ class GPACalculator {
   }
 
   // ----- STORAGE -----
-
   saveData() {
     const currentUser = CURRENT_USER || getCurrentUser();
     if (!currentUser) return;
@@ -297,23 +294,29 @@ class GPACalculator {
       timestamp: new Date().toISOString()
     };
     localStorage.setItem("marks_" + currentUser.username, JSON.stringify(data));
-    this.showToast("✅ Data saved for " + currentUser.username);
   }
 
   loadDataForUser(username) {
     const raw = localStorage.getItem("marks_" + username);
     if (!raw) {
-      this.semesters = [{ subjects: [{ name: "", grade: "O", credits: 4 }] }];
+      this.semesters = [{ year: 1, subjects: [{ name: "", grade: "O", credits: 4 }] }];
       this.currentSemester = 1;
       return false;
     }
     try {
       const data = JSON.parse(raw);
-      this.semesters = data.semesters || [{ subjects: [] }];
+      this.semesters =
+        (data.semesters || []).map((s, i) => ({
+          year: s.year || Math.min(4, Math.ceil((i + 1) / 2)),
+          subjects: s.subjects || []
+        }));
+      if (!this.semesters.length) {
+        this.semesters = [{ year: 1, subjects: [] }];
+      }
       this.currentSemester = data.currentSemester || 1;
       return true;
     } catch {
-      this.semesters = [{ subjects: [] }];
+      this.semesters = [{ year: 1, subjects: [] }];
       this.currentSemester = 1;
       return false;
     }
@@ -331,20 +334,11 @@ class GPACalculator {
     clearTimeout(this._saveTimer);
     this._saveTimer = setTimeout(() => this.saveData(), 1500);
   }
-
-  showToast(msg) {
-    const div = document.createElement("div");
-    div.textContent = msg;
-    div.style.cssText =
-      "position:fixed;top:20px;right:20px;background:#48bb78;color:white;padding:10px 16px;border-radius:8px;z-index:9999;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,0.3);";
-    document.body.appendChild(div);
-    setTimeout(() => div.remove(), 2500);
-  }
 }
 
 // ---------- GLOBAL INSTANCE & WRAPPERS ----------
-
 const calculator = new GPACalculator();
+calculator.init();
 
 function addNewSemester() {
   calculator.addNewSemester();
@@ -377,8 +371,75 @@ function clearSavedData() {
   calculator.clearSavedData();
 }
 
-// ---------- AUTH UI FUNCTIONS ----------
+// ---------- ADMIN PANEL ----------
+function renderAdminUserTable() {
+  const tbody = document.getElementById("adminUserTableBody");
+  if (!tbody) return;
 
+  const users = getUsers();
+  tbody.innerHTML = "";
+
+  users.forEach((u, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${u.username}</td>
+      <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${u.role}</td>
+      <td style="padding:8px;border-bottom:1px solid #e2e8f0;">
+        ${u.approved ? "✅ Yes" : "❌ No"}
+      </td>
+      <td style="padding:8px;border-bottom:1px solid #e2e8f0;">
+        ${
+          u.role === "admin"
+            ? "<small>Admin</small>"
+            : `
+          <button class="btn small ${u.approved ? "secondary" : "primary"}"
+                  onclick="toggleUserApproval(${index})">
+            ${u.approved ? "Revoke" : "Approve"}
+          </button>`
+        }
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function toggleUserApproval(index) {
+  const users = getUsers();
+  const user = users[index];
+  if (!user) return;
+
+  if (user.role === "admin") {
+    alert("Admin account cannot be changed.");
+    return;
+  }
+
+  user.approved = !user.approved;
+  saveUsers(users);
+  renderAdminUserTable();
+  alert(
+    `${user.username} is now ${user.approved ? "APPROVED" : "BLOCKED"} by admin.`
+  );
+}
+
+function renderLoginLogs() {
+  const tbody = document.getElementById("loginLogTableBody");
+  if (!tbody) return;
+
+  const logs = getLoginLogs();
+  tbody.innerHTML = "";
+
+  logs.forEach((log) => {
+    const tr = document.createElement("tr");
+    const time = new Date(log.time).toLocaleString();
+    tr.innerHTML = `
+      <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${log.username}</td>
+      <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${time}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ---------- AUTH UI FUNCTIONS ----------
 function showLogin() {
   document.getElementById("loginBox").classList.remove("hidden");
   document.getElementById("registerBox").classList.add("hidden");
@@ -454,13 +515,21 @@ function showAppForUser(user) {
   calculator.renderSemesterTabs();
   calculator.renderTable();
 
+  const adminPanel = document.getElementById("adminPanel");
+  const logPanel = document.getElementById("loginLogPanel");
+
   if (user.role === "admin") {
-    console.log("All users:", getUsers());        // admin ke liye console log
-    console.log("Login logs:", getLoginLogs());
+    adminPanel.classList.remove("hidden");
+    logPanel.classList.remove("hidden");
+    renderAdminUserTable();
+    renderLoginLogs();
+  } else {
+    adminPanel.classList.add("hidden");
+    logPanel.classList.add("hidden");
   }
 }
 
-// auto‑save on unload
+// auto-save on unload
 window.addEventListener("beforeunload", () => {
   calculator.saveData();
 });

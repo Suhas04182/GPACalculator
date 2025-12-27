@@ -228,6 +228,11 @@ select:focus {
   font-size: 13px;
 }
 
+.admin-section {
+  padding: 20px 40px;
+  background: #f8fafc;
+}
+
 .results-section {
   padding: 40px;
   background: #f8f9ff;
@@ -266,7 +271,8 @@ select:focus {
   }
 
   .form-section,
-  .results-section {
+  .results-section,
+  .admin-section {
     padding: 25px 20px;
   }
 

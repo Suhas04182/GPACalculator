@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  <!-- MAIN APP (LOGIN KE BAAD DIKHNA) -->
+  <!-- MAIN APP (LOGIN KE BAAD) -->
   <div class="container hidden" id="appContainer">
     <header>
       <h1>🎓 CGPA/SGPA Calculator</h1>
@@ -87,6 +87,42 @@
         <button class="btn secondary" onclick="clearSavedData()">🗑️ Clear Saved Data</button>
       </div>
     </main>
+
+    <!-- ADMIN PANEL -->
+    <section class="admin-section hidden" id="adminPanel">
+      <h2 style="margin-bottom:10px;">Admin Panel – User Approvals</h2>
+      <p style="font-size:14px;margin-bottom:10px;">
+        Approve students to allow login & marks access.
+      </p>
+      <table style="width:100%;border-collapse:collapse;background:white;">
+        <thead>
+          <tr>
+            <th style="padding:8px;border-bottom:1px solid #e2e8f0;">Username</th>
+            <th style="padding:8px;border-bottom:1px solid #e2e8f0;">Role</th>
+            <th style="padding:8px;border-bottom:1px solid #e2e8f0;">Approved</th>
+            <th style="padding:8px;border-bottom:1px solid #e2e8f0;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="adminUserTableBody"></tbody>
+      </table>
+    </section>
+
+    <!-- LOGIN HISTORY -->
+    <section class="admin-section hidden" id="loginLogPanel">
+      <h2 style="margin-bottom:10px;">Login History</h2>
+      <p style="font-size:14px;margin-bottom:10px;">
+        Recently who logged in and when.
+      </p>
+      <table style="width:100%;border-collapse:collapse;background:white;">
+        <thead>
+          <tr>
+            <th style="padding:8px;border-bottom:1px solid #e2e8f0;">Username</th>
+            <th style="padding:8px;border-bottom:1px solid #e2e8f0;">Time</th>
+          </tr>
+        </thead>
+        <tbody id="loginLogTableBody"></tbody>
+      </table>
+    </section>
 
     <section class="results-section">
       <div id="sgpaResult" class="result-box hidden"></div>
