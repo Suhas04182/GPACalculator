@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CGPA/SGPA Calculator with Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- AUTH SECTION -->
+  <div id="authWrapper">
+    <div id="loginBox" class="auth-box">
+      <h2>Login</h2>
+      <input id="loginUsername" type="text" placeholder="Username" />
+      <input id="loginPassword" type="password" placeholder="Password" />
+      <button class="btn primary" onclick="handleLogin()">Login</button>
+
+      <p class="auth-text">
+        New user?
+        <button class="btn secondary small" type="button" onclick="showRegister()">
+          Register
+        </button>
+      </p>
+    </div>
+
+    <div id="registerBox" class="auth-box hidden">
+      <h2>Register</h2>
+      <input id="regUsername" type="text" placeholder="Choose username" />
+      <input id="regPassword" type="password" placeholder="Choose password" />
+      <button class="btn primary" onclick="handleRegister()">Create Account</button>
+
+      <p class="auth-text">
+        Already have account?
+        <button class="btn secondary small" type="button" onclick="showLogin()">
+          Back to Login
+        </button>
+      </p>
+    </div>
+  </div>
+
+  <!-- MAIN APP (LOGIN KE BAAD DIKHNA) -->
+  <div class="container hidden" id="appContainer">
+    <header>
+      <h1>🎓 CGPA/SGPA Calculator</h1>
+      <p id="userInfoText">Not logged in</p>
+      <button class="btn secondary small logout-btn" onclick="handleLogout()">
+        Logout
+      </button>
+    </header>
+
+    <main class="form-section">
+      <div class="semester-tabs" id="semesterTabs"></div>
+
+      <button class="btn-add-semester" onclick="addNewSemester()">
+        ➕ Add New Semester
+      </button>
+
+      <div class="table-container">
+        <table id="subjectsTable">
+          <thead>
+            <tr>
+              <th>Subject Name</th>
+              <th>
+                Grade
+                <br />
+                <small>O=10, A+=9, A=8, B+=7, B=6, C+=5, C=4, F=0</small>
+              </th>
+              <th>Credits</th>
+              <th>Grade Points</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="subjectsBody"></tbody>
+        </table>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn primary" onclick="addSubject()">➕ Add Subject</button>
+        <button class="btn primary" onclick="calculateSGPA()">Calculate SGPA</button>
+        <button class="btn primary" onclick="calculateCGPA()">Calculate CGPA</button>
+        <button class="btn secondary" onclick="clearCurrentSemester()">Clear Semester</button>
+        <button class="btn danger" onclick="resetAll()">Reset All</button>
+      </div>
+
+      <div class="save-buttons">
+        <button class="btn primary" onclick="saveData()">💾 Save Marks</button>
+        <button class="btn secondary" onclick="clearSavedData()">🗑️ Clear Saved Data</button>
+      </div>
+    </main>
+
+    <section class="results-section">
+      <div id="sgpaResult" class="result-box hidden"></div>
+      <div id="cgpaResult" class="result-box hidden"></div>
+      <div id="summaryStats" class="stats-box hidden"></div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
