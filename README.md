@@ -100,14 +100,6 @@ university CGPA tools.​
 #How Data Is Saved Per User
 On any change (add subject, edit grade, change semester), an auto‑save timer runs.
 Data is saved under key: marks_<username> in localStorage.
-
-Example:
-json
-{
-  "semesters": [......],
-  "currentSemester": 2,
-  "timestamp": "2025-12-27T15:30:00.000Z"
-}
 This lets each student see their own saved marks even after closing the browser, as long as
 localStorage is not cleared.​
 
